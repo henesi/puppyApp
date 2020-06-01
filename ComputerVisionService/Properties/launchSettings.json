@@ -1,0 +1,44 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:55929",
+      "sslPort": 44354
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "MESSAGEBROKER_SERVER": "localhost:5673",
+        "MESSAGEBROKER_USERNAME": "puppy",
+        "ELASTICSEARCH_SERVER": "localhost:9200",
+        "SECRET": "THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459",
+        "FILE_SERVER": "localhost:9000",
+        "FILE_SERVER_ACCESS_KEY": "minio_access_key",
+        "FILE_SERVER_SECRET_KEY": "minio_secret_key",
+        "APIGATEWAY_SERVER": "localhost:9000",
+        "MESSAGEBROKER_PASSWORD": "puppy",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ALLOWED_AUTH_ORIGINS": "http://localhost:4100"
+      }
+    },
+    "ComputerVisionService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "MESSAGEBROKER_SERVER": "rabbitmq://localhost:5672",
+        "MESSAGEBROKER_USERNAME": "guest",
+        "ELASTICSEARCH_SERVER": "http://localhost:9200",
+        "SECRET": "THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459",
+        "MESSAGEBROKER_PASSWORD": "guest",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ALLOWED_AUTH_ORIGINS": "http://localhost:4100"
+      }
+    }
+  }
+}

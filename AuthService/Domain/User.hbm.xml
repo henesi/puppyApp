@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="AuthService" namespace="AuthService.Domain">
+  <class name="User" table="Users">
+    <id name="UserId" column="userId">
+      <generator class="guid.comb" />
+    </id>
+    <property name="Username" column="username" unique="true"/>
+    <property name="Email" column="email" unique="true"/>
+    <property name="PasswordHash" column="passwordHash"/>
+    <property name="PasswordSalt" column="passwordSalt"/>
+    <property name="CreationDate" column="creationDate"/>
+    <property name="Role" column="role"/>
+  </class>
+</hibernate-mapping>
