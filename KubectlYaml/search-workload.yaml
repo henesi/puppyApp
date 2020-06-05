@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animalsearch
+spec:
+  selector:
+   matchLabels:
+    app: animalsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: animalsearch
+    spec:
+      containers:
+        - name: animalsearch
+          image: puppy-search:latest
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: animalsearch-config
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: animalsearch-config
+      labels:
+        app: animalsearch
+    data:
+         SECRET: THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459
+         ASPNETCORE_ENVIRONMENT: Development
+         ALLOWED_AUTH_ORIGINS: http://192.168.1.16:4100
+         FILE_SERVER: minio:9000
+         FILE_SERVER_ACCESS_KEY: minio_access_key
+         FILE_SERVER_SECRET_KEY: minio_secret_key
+         APIGATEWAY_SERVER: 192.168.1.16:30902/filestorage
+         MESSAGEBROKER_USERNAME: puppy
+         MESSAGEBROKER_PASSWORD: puppy
+         MESSAGEBROKER_SERVER: rabbitmq://message-broker
+         ELASTICSEARCH_SERVER: elastic-search:9200
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: animalsearch
+    spec:
+       selector: 
+        app: animalsearch
+       ports:
+        - name: animalsearch
+          port: 80
+          nodePort: 30905
+       type: NodePort

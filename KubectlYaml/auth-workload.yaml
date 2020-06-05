@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+spec:
+  selector:
+   matchLabels:
+    app: auth
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: puppy-auth:latest
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: auth-config
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: auth-config
+      labels:
+        app: auth
+    data:
+      SECRET: THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459
+      ASPNETCORE_ENVIRONMENT: Development
+      ALLOWED_AUTH_ORIGINS: http://192.168.1.16:4100
+      DEFAULT_CONNECTION: User ID=puppy;Password=puppy;Database=puppy_entity;Host=postgres
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: auth
+    spec:
+       selector: 
+        app: auth
+       ports:
+        - name: auth
+          port: 80
+          nodePort: 30903
+       type: NodePort

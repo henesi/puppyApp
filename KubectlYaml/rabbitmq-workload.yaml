@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: message-broker
+spec:
+ selector:
+  matchLabels:
+   app: message-broker
+ replicas: 1
+ template: 
+  metadata:
+    name: message-broker
+    labels:
+      app: message-broker
+  spec:
+   containers:
+   - name: message-broker
+     image: rabbitmq:3-management
+     env:
+           - name: RABBITMQ_DEFAULT_USER
+             value: "puppy"
+           - name: RABBITMQ_DEFAULT_PASS
+             value: "puppy"
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: message-broker
+spec:
+ selector: 
+  app: message-broker
+ ports:
+  - name: amqp
+    port: 5672
+  - name: http
+    port: 15672
+    nodePort: 31672
+  - name: sock
+    port: 15674
+ type: NodePort

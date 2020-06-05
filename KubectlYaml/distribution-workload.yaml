@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distribution
+spec:
+  selector:
+   matchLabels:
+    app: distribution
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: distribution
+    spec:
+      containers:
+        - name: distribution
+          image: puppy-distribution:latest
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: distribution-config
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: distribution-config
+      labels:
+        app: distribution
+    data:
+         SECRET: THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459
+         ASPNETCORE_ENVIRONMENT: Development
+         ALLOWED_AUTH_ORIGINS: http://192.168.1.16:4100
+         FILE_SERVER: minio:9000
+         FILE_SERVER_ACCESS_KEY: minio_access_key
+         FILE_SERVER_SECRET_KEY: minio_secret_key
+         APIGATEWAY_SERVER: 192.168.1.16:30902/filestorage
+         CONNECTION_STRING: User ID=puppy;Password=puppy;Database=puppy_entity;Host=postgres
+         MESSAGEBROKER_USERNAME: puppy
+         MESSAGEBROKER_PASSWORD: puppy
+         MESSAGEBROKER_SERVER: rabbitmq://message-broker
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: distribution
+    spec:
+       selector: 
+        app: distribution
+       ports:
+        - name: distribution
+          port: 80
+          nodePort: 30904
+       type: NodePort

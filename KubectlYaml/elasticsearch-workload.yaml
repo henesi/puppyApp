@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-search
+spec:
+  selector:
+   matchLabels:
+    app: elastic-search
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elastic-search
+    spec:
+      containers:
+        - name: elastic-search
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: elastic-search-config
+          volumeMounts:
+            - mountPath: /var/lib/elasticsearch/data
+              name: elasticsearchdb
+      volumes:
+        - name: elasticsearchdb
+          persistentVolumeClaim:
+            claimName: elastic-search-pv-claim
+---
+    kind: PersistentVolume
+    apiVersion: v1
+    metadata:
+      name: elastic-search-pv-volume
+      labels:
+        type: local
+        app: elastic-search
+    spec:
+      storageClassName: manual
+      capacity:
+        storage: 5Gi
+      accessModes:
+        - ReadWriteMany
+      hostPath:
+        path: "/mnt/data"
+---
+    kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: elastic-search-pv-claim
+      labels:
+        app: elastic-search
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 5Gi
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: elastic-search-config
+      labels:
+        app: elastic-search
+    data:
+      discovery.type: single-node
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: elastic-search
+    spec:
+       selector: 
+        app: elastic-search
+       ports:
+        - name: elastic-search
+          port: 9200

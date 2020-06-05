@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+spec:
+  selector:
+   matchLabels:
+    app: minio
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - server
+            - /storage
+          envFrom:
+            - configMapRef:
+                name: minio-config
+          volumeMounts:
+            - mountPath: /app/minio
+              name: miniodb
+      volumes:
+        - name: miniodb
+          persistentVolumeClaim:
+            claimName: minio-pv-claim
+---
+    kind: PersistentVolume
+    apiVersion: v1
+    metadata:
+      name: minio-pv-volume
+      labels:
+        type: local
+        app: minio
+    spec:
+      storageClassName: manual
+      capacity:
+        storage: 5Gi
+      accessModes:
+        - ReadWriteMany
+      hostPath:
+        path: "/mnt/data"
+---
+    kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: minio-pv-claim
+      labels:
+        app: minio
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: 5Gi
+    
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: minio-config
+      labels:
+        app: minio
+    data:
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+     name: minio
+    spec:
+     selector: 
+      app: minio
+     ports:
+      - name: http
+        port: 9000
+        nodePort: 30901
+     type: NodePort
