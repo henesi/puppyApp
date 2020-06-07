@@ -36,8 +36,6 @@ namespace ApiGateway
         {
             var configurationOptions = Configuration.Get<ConfigurationOptions>();
 
-            var key = Encoding.ASCII.GetBytes(configurationOptions.SECRET);
-
             services.Configure<ConfigurationOptions>(options => Configuration.Bind(options));
 
             services.AddCors(opt => opt.AddPolicy("CorsPolicy",

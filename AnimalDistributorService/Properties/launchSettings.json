@@ -23,7 +23,7 @@
         "FILE_SERVER_SECRET_KEY": "minio_secret_key",
         "APIGATEWAY_SERVER": "localhost:5003",
         "ALLOWED_AUTH_ORIGINS": "http://localhost:4100",
-        "CONNECTION_STRING": "User ID=puppy;Password=puppy;Database=puppy_core;Host=localhost"
+        "CONNECTION_STRING": "User ID=puppy;Password=puppy;Database=puppy_entity;Host=192.168.65.3;Port=31516"
       }
     },
     "AnimalDistributorService": {

@@ -1,4 +1,5 @@
 ﻿using AnimalDistributorService.DataAccess.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace AnimalDistributorService.DataAccess.Seed
 
         public void Seed()
         {
-            dbContext.Database.EnsureCreated();
+            dbContext.Database.Migrate();
             if (dbContext.AnimalType.Any())
             {
                 return;

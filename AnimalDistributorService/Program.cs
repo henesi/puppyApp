@@ -32,7 +32,7 @@ namespace AnimalDistributorService
             try
             {
                 Log.Information("Starting web host");
-                CreateHostBuilder(args)
+                CreateWebHostBuilder(args)
                     .Build()
                     .Run();
             }
@@ -46,12 +46,11 @@ namespace AnimalDistributorService
             }
         }
 
-        public static IWebHostBuilder CreateHostBuilder(string[] args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true)
-                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("host.json", optional: true)
                 .AddCommandLine(args)
                 .Build();
 
