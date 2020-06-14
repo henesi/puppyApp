@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: animalui
+spec:
+  selector:
+   matchLabels:
+    app: animalui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: animalui
+    spec:
+      containers:
+        - name: animalui
+          image: puppy-ui:latest
+          imagePullPolicy: "IfNotPresent"
+          envFrom:
+            - configMapRef:
+                name: animalui-config
+---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: animalui-config
+      labels:
+        app: animalui
+    data:
+         ASPNETCORE_ENVIRONMENT: Development
+---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: animalui
+    spec:
+       selector: 
+        app: animalui
+       ports:
+        - name: animalui
+          port: 4100
+          nodePort: 30942
+       type: NodePort
