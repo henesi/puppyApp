@@ -11,21 +11,23 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Contract.Models.ComputerVision;
 
-namespace AnimalSearchService.MessageBroker.Consumers
+namespace AnimalDistributorService.MessageBroker.Consumers
 {
     public class AnimalMediaComputedConsumer : IConsumer<Media>
     {
         private readonly ILogger<AnimalMediaComputedConsumer> _logger;
         private readonly IRepository<Media> _mediaRepository;
         private readonly IRepository<Animal> _animalRepository;
+        private readonly IRepository<Rejection> _rejectionRepository;
         private readonly IStorageService _storageService;
 
-        public AnimalMediaComputedConsumer(ILogger<AnimalMediaComputedConsumer> logger, IRepository<Media> mediaRepository, IRepository<Animal> animalRepository, IStorageService storageService)
+        public AnimalMediaComputedConsumer(ILogger<AnimalMediaComputedConsumer> logger, IRepository<Media> mediaRepository, IRepository<Rejection> rejectionRepository, IRepository<Animal> animalRepository, IStorageService storageService)
         {
             this._logger = logger;
             this._mediaRepository = mediaRepository;
             this._animalRepository = animalRepository;
             this._storageService = storageService;
+            this._rejectionRepository = rejectionRepository;
         }
         public async Task Consume(ConsumeContext<Media> context)
         {
@@ -72,7 +74,8 @@ namespace AnimalSearchService.MessageBroker.Consumers
 
             if (!checkResult)
             {
-                //TODO make a cleanup
+                //some notification about failure
+                await _rejectionRepository.Add(new Rejection(context.Message.FileName, context.Message.AnimalRef, context.Message.MediaType));
             }
         }
     }

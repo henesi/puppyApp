@@ -46,7 +46,6 @@ class Editor extends React.Component {
     const updateFieldEventMedia =
       key => ev => this.props.onUpdateField(key, ev.target.files[0]);
 
-    this.changeTitle = updateFieldEvent('title'); // niepotrzebne
     this.changeDescription = updateFieldEvent('description');
     this.changeBody = updateFieldEvent('body');
     this.changeTagInput = updateFieldEvent('tagInput');
@@ -75,7 +74,7 @@ class Editor extends React.Component {
         city: this.props.city,
         street: this.props.street,
         type: this.props.type,
-        body: this.props.body,
+        description: this.props.body,
         tagList: this.props.tagList
       };
 
@@ -199,7 +198,7 @@ class Editor extends React.Component {
                     <textarea
                       className="form-control"
                       rows="8"
-                      placeholder="Biography"
+                      placeholder="Description"
                       value={this.props.body}
                       onChange={this.changeBody}>
                     </textarea>

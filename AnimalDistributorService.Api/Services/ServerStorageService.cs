@@ -7,6 +7,7 @@ using Contract.Models;
 using Minio;
 using Minio.Exceptions;
 using Minio.DataModel;
+using System.Reactive.Linq;
 
 namespace AnimalDistributorService.Api.Services
 {
@@ -23,9 +24,24 @@ namespace AnimalDistributorService.Api.Services
             this.apigatewayServer = apiGateway;
             this._minioClient = new MinioClient(fileStorageServer, accessKey, secretKey);
         }
-        public Task DeleteMediaAsync(Guid animalIdentifier, string fileName)
+        public Task DeleteMediaAsync(Guid animalIdentifier, MediaType mediaType, string fileName)
         {
-            return _minioClient.RemoveObjectAsync(bucketName, fileName);
+            var bucketKeys = new List<string>();
+            var listObjects = _minioClient.ListObjectsAsync(bucketName, $"{animalIdentifier}/{(int)mediaType}/{fileName}/", true);
+
+            IDisposable subscription = listObjects.Subscribe(
+                item => bucketKeys.Add(item.Key),
+                ex => throw ex);
+
+            listObjects.Wait();
+            subscription.Dispose();
+
+            foreach(string item in bucketKeys)
+            {
+                _minioClient.RemoveObjectAsync(bucketName, item);
+            }
+
+            return Task.CompletedTask;
         }
 
         public string GetMediaUrl(Guid animalIdentifier, MediaType mediaType, string fileDirectory, string fileName, int animalType = 0)
@@ -38,7 +54,7 @@ namespace AnimalDistributorService.Api.Services
 
             if (fileName == null)
             {
-                if(animalType == 1)
+                if (animalType == 1)
                 {
                     url = dogUrl;
                 }

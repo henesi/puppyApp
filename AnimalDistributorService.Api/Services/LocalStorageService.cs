@@ -40,7 +40,7 @@ namespace AnimalDistributorService.Api.Services
             }
         }
 
-        public async Task DeleteMediaAsync(Guid animalIdentifier, string fileName)
+        public async Task DeleteMediaAsync(Guid animalIdentifier, MediaType mediaType, string fileName)
         {
             var filePath = Path.Combine(WebRootPath, MediaRootFoler, fileName);
             if (File.Exists(filePath))

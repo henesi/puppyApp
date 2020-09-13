@@ -90,7 +90,7 @@ const Puppies = {
   get: id =>
     requests_distribution.get(`api/animal/${id}`),
   add: puppy =>
-    requests_distribution.post(`api/animal`, { alias: puppy.alias, localization: {country: puppy.country, city: puppy.city, street: puppy.street}, animalType: puppy.type, body: puppy.body, tagList: puppy.tagList })
+    requests_distribution.post(`api/animal`, { alias: puppy.alias, description: puppy.description, localization: {country: puppy.country, city: puppy.city, street: puppy.street}, animalType: puppy.type, body: puppy.body, tagList: puppy.tagList })
 }
 
 const Media = {

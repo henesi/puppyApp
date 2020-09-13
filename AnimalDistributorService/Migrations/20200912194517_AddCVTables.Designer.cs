@@ -3,15 +3,17 @@ using System;
 using AnimalDistributorService.DataAccess.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace AnimalDistributorService.Migrations
 {
     [DbContext(typeof(AnimalDBContext))]
-    partial class AnimalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200912194517_AddCVTables")]
+    partial class AddCVTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

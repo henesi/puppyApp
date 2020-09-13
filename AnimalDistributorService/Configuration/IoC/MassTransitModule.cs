@@ -1,4 +1,4 @@
-﻿using AnimalSearchService.MessageBroker.Consumers;
+﻿using AnimalDistributorService.MessageBroker.Consumers;
 using Autofac;
 using Contract.MessageBroker;
 using GreenPipes;
@@ -36,6 +36,13 @@ namespace AnimalDistributorService.Configuration.IoC
                     {
                         e.PrefetchCount = 1;
                         e.ConfigureConsumer<AnimalProfileComputedConsumertedConsumer>(context,
+                            p => p.UseConcurrencyLimit(1));
+                    });
+
+                    busCfg.ReceiveEndpoint(Queues.ANIMAL_COMPUTED_STATISTICS, e =>
+                    {
+                        e.PrefetchCount = 1;
+                        e.ConfigureConsumer<StatisticsConsumer>(context,
                             p => p.UseConcurrencyLimit(1));
                     });
                 }));

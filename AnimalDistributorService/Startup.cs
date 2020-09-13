@@ -13,6 +13,7 @@ using AnimalDistributorService.MessageBroker.Producers;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Contract.Models;
+using Contract.Models.ComputerVision;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -41,7 +42,7 @@ namespace AnimalDistributorService
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             var configurationOptions = Configuration.Get<ConfigurationOptions>();
 
@@ -61,6 +62,9 @@ namespace AnimalDistributorService
             services.AddDbContext<AnimalDBContext>(options => options.UseNpgsql(configurationOptions.CONNECTION_STRING));
             services.AddScoped<IRepository<Animal>, AnimalRepository>();
             services.AddScoped<IRepository<Media>, MediaRepository>();
+            services.AddScoped<IRepository<Rejection>, RejectionRepository>();
+            services.AddScoped<IRepository<Statistics>, StatisticsRepository>();
+
             services.AddScoped<IMediaService, MediaService>();
             services.AddMvc()
                 .AddNewtonsoftJson()
@@ -98,25 +102,26 @@ namespace AnimalDistributorService
 
             services.AddMediatR();
             services.AddAnimalDemoInitializer();
+        }
 
-            var autoFacBuilder = new ContainerBuilder();
-            autoFacBuilder.Populate(services);
+        public void ConfigureContainer(ContainerBuilder autoFacBuilder)
+        {
+            var configurationOptions = Configuration.Get<ConfigurationOptions>();
+
             autoFacBuilder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).AsImplementedInterfaces();
             autoFacBuilder.RegisterModule(new MassTransitModule
             {
                 ConfigurationOptions = configurationOptions
             });
+
             autoFacBuilder.RegisterModule(new FileServerModule
             {
                 ConfigurationOptions = configurationOptions
             });
+
             autoFacBuilder.RegisterType<AnimalCreationProducer>();
             autoFacBuilder.RegisterType<AnimalMediaProducer>();
             autoFacBuilder.RegisterType<AnimalProfileProducer>();
-
-            ApplicationContainer = autoFacBuilder.Build();
-
-            return new AutofacServiceProvider(ApplicationContainer);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -144,13 +149,6 @@ namespace AnimalDistributorService
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "AnimalDistributor Api V1");
             });
-
-            app.UseFileServer(
-                new FileServerOptions()
-                {
-                    FileProvider = new PhysicalFileProvider(Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "Media")).FullName)
-                }
-            );
 
             applicationLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
         }

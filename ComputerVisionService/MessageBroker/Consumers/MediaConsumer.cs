@@ -3,6 +3,7 @@ using ComputerVisionService.MessageBroker.Producers;
 using ComputerVisionService.Utils;
 using Contract.Minio;
 using Contract.Models;
+using Contract.Models.ComputerVision;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,17 +21,17 @@ namespace ComputerVisionService.MessageBroker.Consumers
         private readonly ILogger<MediaConsumer> _logger;
         private readonly IStorageService _storageService;
         private readonly AnimalMediaComputedProducer _animalMediaComputedProducer;
+        private readonly MediaComputedStatisticsProducer _mediaComputedStatisticsProducer;
 
-        public MediaConsumer(ILogger<MediaConsumer> logger, IStorageService storageService, AnimalMediaComputedProducer animalMediaProducer)
+        public MediaConsumer(ILogger<MediaConsumer> logger, IStorageService storageService, MediaComputedStatisticsProducer mediaComputedStatisticsProducer, AnimalMediaComputedProducer animalMediaProducer)
         {
             this._logger = logger;
             this._storageService = storageService;
             this._animalMediaComputedProducer = animalMediaProducer;
+            this._mediaComputedStatisticsProducer = mediaComputedStatisticsProducer;
         }
         public async Task Consume(ConsumeContext<Media> context)
         {
-            _logger.LogDebug("Media created:" + context.Message.MediaId);
-            
             // prepare local paths
             var localImagePath = Path.Combine(Directory.CreateDirectory(Path.Combine("results", context.Message.AnimalRef.ToString(), context.Message.FileName)).FullName, context.Message.FileName);
             var localMappingPath = Path.Combine(Path.Combine("results", context.Message.AnimalRef.ToString(), context.Message.FileName), "mapping");
@@ -59,9 +60,9 @@ namespace ComputerVisionService.MessageBroker.Consumers
             }
 
             // run script
-            var result = ScriptRunner.RunFromCmd("python", "object_detection.py " + context.Message.AnimalRef + " " + context.Message.FileName);
+            var result = ScriptRunner.RunFromCmd("python", "object_detection.py " + context.Message.AnimalRef + " " + context.Message.FileName, out string elapsedTime);
 
-            _logger.LogDebug("Media result for ID :" + context.Message.MediaId + " RESULT: " + result);
+            _logger.LogDebug($"Media result for animal/filename: {context.Message.AnimalRef}/{context.Message.FileName}\n" + result);
 
             await Task.WhenAll(WhenFileCreated(localMappingPath), WhenFileCreated(localTransformedImagePath));
 
@@ -78,6 +79,15 @@ namespace ComputerVisionService.MessageBroker.Consumers
 
             // send message to rabbitMQ to inform about results
             await this._animalMediaComputedProducer.Send(context.Message);
+
+            // send statistics data
+            await this._mediaComputedStatisticsProducer.Send(new Statistics()
+            {
+                AnimalId = context.Message.AnimalRef,
+                ElapsedTime = elapsedTime,
+                FileName = context.Message.FileName,
+                TypeOfMedia = (int)MediaType.Image
+            });
 
             // clean  up
             Directory.Delete(Directory.CreateDirectory(Path.Combine("results", context.Message.AnimalRef.ToString(), context.Message.FileName)).FullName, true);

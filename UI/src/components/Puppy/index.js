@@ -1,8 +1,54 @@
 import React from 'react';
 import agent from '../../agent';
 import MediaGallery from './MediaGallery';
+import Information from './Information';
 import { connect } from 'react-redux';
 import { PUPPY_PAGE_LOADED, PUPPY_PAGE_UNLOADED } from '../../constants/actionTypes';
+import ModalImage from "react-modal-image";
+
+const PuppyDescriptionInView = props => {
+  if (props.description) {
+    return (
+      <div className="container page">
+          <hr></hr>
+        <div className="container page">
+          <div dangerouslySetInnerHTML={{ __html: props.description }} />
+        </div>  
+      </div>
+    );
+  }
+  return null;
+};
+
+const PuppyLackOfInformationView = props => {
+  if (!props.description && props.puppyMedia.length === 0) {
+    return (
+      <div className="container page">
+        <div className="container page">
+          <p>Description not yet added. Stay tuned</p>
+        </div>  
+      </div>
+    );
+  }
+  return null;
+};
+
+const PuppyMediaInView = props => {
+  if (props.puppyMedia.length > 0) {
+    return (
+      <div className="container page">
+        <hr></hr>
+        <div className="container page">
+          <div className="row">
+          <MediaGallery
+          />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 const mapStateToProps = state => ({
   ...state.puppy,
@@ -32,30 +78,29 @@ class Puppy extends React.Component {
     if (!this.props.puppy) {
       return null;
     }
-    // const markup = { __html: marked(this.props.body, { sanitize: true }) };
-    const canModify = this.props.currentUser &&
-      this.props.currentUser.nameIdentifier === this.props.match.params.id;
+
     return (
       <div className="article-page">
         <div className="container page">
           <div className="row">
             <div className="col-md-4">
-              <img className="card-img-top img-profile" src={this.props.puppy.profile} alt={this.props.puppy.alias} ></img>
+            <ModalImage
+              className="card-img-top img-gallery"
+              small={this.props.puppy.profile}
+              large={this.props.puppy.profile}
+              hideDownload={true}
+              hideZoom={true}
+              alt={this.props.puppy.alias + "_profile"}
+            />
             </div>
-            <div className="col-md-4">
-              <h1>{this.props.puppy.alias}</h1>
-              <p>Country: {this.props.puppy.localization.country}</p>
-              <p>City: {this.props.puppy.localization.city}</p>
-              <p>Street: {this.props.puppy.localization.street}</p>
+            <Information
+                puppy={this.props.puppy}
+                />
             </div>
           </div>
-        </div>
-        <div className="container page">
-          <div className="row">
-          <MediaGallery
-          />
-          </div>
-        </div>
+        <PuppyLackOfInformationView puppyMedia={this.props.puppyMedia} description={this.props.puppy.description} />
+        <PuppyDescriptionInView description={this.props.puppy.description} /> 
+        <PuppyMediaInView puppyMedia={this.props.puppyMedia} /> 
       </div>
     );
   }

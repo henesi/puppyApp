@@ -38,6 +38,7 @@ namespace AnimalDistributorService.Controller
             var createAnimalCommand = new CreateAnimalCommand
             {
                 Alias = cmd.Alias,
+                Description = cmd.Description,
                 AnimalType = cmd.AnimalType,
                 Localization = cmd.Localization,
                 CreatorId = Guid.Parse(identity.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault().Value)

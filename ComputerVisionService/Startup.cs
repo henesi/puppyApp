@@ -107,6 +107,7 @@ namespace ComputerVisionService
 
             autoFacBuilder.RegisterType<AnimalMediaComputedProducer>();
             autoFacBuilder.RegisterType<AnimalProfileComputedProducer>();
+            autoFacBuilder.RegisterType<MediaComputedStatisticsProducer>();
 
             autoFacBuilder.RegisterModule(new FileServerModule
             {

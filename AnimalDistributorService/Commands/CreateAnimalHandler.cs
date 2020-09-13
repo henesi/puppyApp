@@ -23,6 +23,7 @@ namespace AnimalDistributorService.Commands
         {
             var o = new Animal(
                 request.Alias,
+                request.Description,
                 Localization.Of(
                     request.Localization.Country,
                     request.Localization.City,

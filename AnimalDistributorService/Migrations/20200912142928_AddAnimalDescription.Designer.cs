@@ -3,15 +3,17 @@ using System;
 using AnimalDistributorService.DataAccess.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace AnimalDistributorService.Migrations
 {
     [DbContext(typeof(AnimalDBContext))]
-    partial class AnimalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200912142928_AddAnimalDescription")]
+    partial class AddAnimalDescription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,55 +60,6 @@ namespace AnimalDistributorService.Migrations
                     b.HasKey("AnimalTypeId");
 
                     b.ToTable("AnimalType");
-                });
-
-            modelBuilder.Entity("Contract.Models.ComputerVision.Rejection", b =>
-                {
-                    b.Property<Guid>("RejectionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AnimalRef")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("text");
-
-                    b.Property<int>("MediaType")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Verified")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("RejectionId");
-
-                    b.HasIndex("AnimalRef")
-                        .IsUnique();
-
-                    b.ToTable("CV_Rejection");
-                });
-
-            modelBuilder.Entity("Contract.Models.ComputerVision.StatisticsModel", b =>
-                {
-                    b.Property<Guid>("StatisticId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AnimalId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ElapsedTime")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("text");
-
-                    b.Property<int>("TypeOfMedia")
-                        .HasColumnType("integer");
-
-                    b.HasKey("StatisticId");
-
-                    b.ToTable("CV_Statistics");
                 });
 
             modelBuilder.Entity("Contract.Models.Localization", b =>
@@ -204,15 +157,6 @@ namespace AnimalDistributorService.Migrations
                     b.HasOne("Contract.Models.AnimalType", "AnimalType")
                         .WithMany("Animals")
                         .HasForeignKey("AnimalTypeRef")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Contract.Models.ComputerVision.Rejection", b =>
-                {
-                    b.HasOne("Contract.Models.Animal", "Animal")
-                        .WithOne("Rejection")
-                        .HasForeignKey("Contract.Models.ComputerVision.Rejection", "AnimalRef")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

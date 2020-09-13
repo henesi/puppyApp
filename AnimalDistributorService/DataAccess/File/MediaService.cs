@@ -25,14 +25,14 @@ namespace AnimalDistributorService.DataAccess.File
             return _storageService.SaveMediaAsync(mediaBinaryStream, dirs, fileName);
         }
 
-        public Task DeleteMediaAsync(Guid animalIdentifier, Media media)
+        public Task DeleteMediaAsync(Guid animalIdentifier, MediaType mediaType, Media media)
         {
-            return DeleteMediaAsync(animalIdentifier, media.FileName);
+            return DeleteMediaAsync(animalIdentifier, mediaType, media.FileName);
         }
 
-        public Task DeleteMediaAsync(Guid animalIdentifier, string fileName)
+        public Task DeleteMediaAsync(Guid animalIdentifier, MediaType mediaType, string fileName)
         {
-            return _storageService.DeleteMediaAsync(animalIdentifier, fileName);
+            return _storageService.DeleteMediaAsync(animalIdentifier, mediaType, fileName);
         }
     }
 }

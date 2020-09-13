@@ -13,6 +13,6 @@ namespace AnimalDistributorService.Api.Services
 
         Task SaveMediaAsync(Stream mediaBinaryStream, string dirs, string fileName);
 
-        Task DeleteMediaAsync(Guid animalIdentifier, string fileName);
+        Task DeleteMediaAsync(Guid animalIdentifier, MediaType mediaType, string fileName);
     }
 }

@@ -8,9 +8,10 @@ namespace ComputerVisionService.Utils
 {
     public class ScriptRunner
     {
-        public static string RunFromCmd(string file, string args)
+        public static string RunFromCmd(string file, string args, out string elapsedTime)
         {
             string result = string.Empty;
+            var sw = Stopwatch.StartNew();
             try
             {
                 var info = new ProcessStartInfo(file)
@@ -31,6 +32,8 @@ namespace ComputerVisionService.Utils
                     result += proc.StandardError.ReadToEnd();
                     result += proc.StandardOutput.ReadToEnd();
                 }
+                sw.Stop();
+                elapsedTime = sw.Elapsed.ToString();
                 return result;
             }
             catch (Exception ex)

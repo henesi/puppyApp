@@ -1,5 +1,6 @@
 ﻿using AnimalDistributorService.DataAccess.EntityFramework.Configuration;
 using Contract.Models;
+using Contract.Models.ComputerVision;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace AnimalDistributorService.DataAccess.EntityFramework
         public DbSet<AnimalType> AnimalType { get; set; }
         public DbSet<Media> Media { get; set; }
         public DbSet<Profile> Profile { get; set; }
+        public DbSet<Rejection> CV_Rejection { get; set; }
+        public DbSet<Statistics> CV_Statistics { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +40,11 @@ namespace AnimalDistributorService.DataAccess.EntityFramework
 
             modelBuilder.Entity<Profile>().HasKey(x => x.ProfileId);
             modelBuilder.Entity<Animal>().HasOne(a => a.Profile).WithOne(x => x.Animal).HasForeignKey<Profile>(b => b.AnimalRef);
+
+            modelBuilder.Entity<Rejection>().HasKey(x => x.RejectionId);
+            modelBuilder.Entity<Animal>().HasOne(a => a.Rejection).WithOne(x => x.Animal).HasForeignKey<Rejection>(b => b.AnimalRef);
+
+            modelBuilder.Entity<Statistics>().HasKey(x => x.StatisticId);
 
             base.OnModelCreating(modelBuilder);
         }

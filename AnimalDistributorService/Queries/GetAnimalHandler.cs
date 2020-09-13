@@ -35,6 +35,7 @@ namespace AuthService.Queries
             return new GetAnimalQueryResult
             {
                 Alias = animal.Alias,
+                Description = animal.Description,
                 AnimalType = new AnimalTypeDto
                 {
                     id = animal.AnimalType.AnimalTypeId,

@@ -15,15 +15,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MESSAGEBROKER_PASSWORD": "puppy",
-        "MESSAGEBROKER_SERVER": "rabbitmq://localhost:5673",
+        "MESSAGEBROKER_SERVER": "rabbitmq://localhost:31671",
         "MESSAGEBROKER_USERNAME": "puppy",
         "SECRET": "THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459",
-        "FILE_SERVER": "localhost:9000/",
+        "FILE_SERVER": "localhost:30901/",
         "FILE_SERVER_ACCESS_KEY": "minio_access_key",
         "FILE_SERVER_SECRET_KEY": "minio_secret_key",
-        "APIGATEWAY_SERVER": "localhost:5003",
+        "APIGATEWAY_SERVER": "localhost:30901/",
         "ALLOWED_AUTH_ORIGINS": "http://localhost:4100",
-        "CONNECTION_STRING": "User ID=puppy;Password=puppy;Database=puppy_entity;Host=192.168.65.3;Port=31516"
+        "CONNECTION_STRING": "User ID=puppy;Password=puppy;Database=puppy_entity;Host=localhost;Port=30031"
       }
     },
     "AnimalDistributorService": {
@@ -35,10 +35,10 @@
         "MESSAGEBROKER_PASSWORD": "guest",
         "MESSAGEBROKER_SERVER": "rabbitmq://localhost:5672",
         "MESSAGEBROKER_USERNAME": "guest",
-        "FILE_SERVER": "localhost:9000/",
+        "FILE_SERVER": "localhost:30901/",
         "SECRET": "THIS_IS_A_RANDOM_SECRET_2e7a1e80-16ee-4e52-b5c6-5e8892453459",
         "ALLOWED_AUTH_ORIGINS": "http://localhost:8080",
-        "CONNECTION_STRING": "User ID=lab_user;Password=lab_pass;Database=puppy_core;Host=localhost;Port=5432"
+        "CONNECTION_STRING": "User ID=puppy;Password=puppy;Database=puppy_entity;Host=localhost;Port=30886"
       }
     }
   }

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using Contract.Models.ComputerVision;
 using AnimalDistributorService.MessageBroker.Producers;
 
-namespace AnimalSearchService.MessageBroker.Consumers
+namespace AnimalDistributorService.MessageBroker.Consumers
 {
     public class AnimalProfileComputedConsumertedConsumer : IConsumer<Profile>
     {
@@ -21,15 +21,17 @@ namespace AnimalSearchService.MessageBroker.Consumers
         private readonly IRepository<Animal> _animalRepository;
         private readonly IStorageService _storageService;
         private readonly AnimalCreationProducer _animalCreationProducer;
+        private readonly IRepository<Rejection> _rejectionRepository;
 
         public AnimalProfileComputedConsumertedConsumer(ILogger<AnimalProfileComputedConsumertedConsumer> logger, IRepository<Profile> profileRepository, 
-            IRepository<Animal> animalRepository, IStorageService storageService, AnimalCreationProducer animalCreationProducer)
+            IRepository<Animal> animalRepository, IRepository<Rejection> rejectionRepository, IStorageService storageService, AnimalCreationProducer animalCreationProducer)
         {
             this._logger = logger;
             this._profileRepository = profileRepository;
             this._animalRepository = animalRepository;
             this._storageService = storageService;
             this._animalCreationProducer = animalCreationProducer;
+            this._rejectionRepository = rejectionRepository;
         }
         public async Task Consume(ConsumeContext<Profile> context)
         {
@@ -67,6 +69,8 @@ namespace AnimalSearchService.MessageBroker.Consumers
                 {
                     if(item.percentage_probability > 60.0)
                     {
+                        var oldProfile = animal.Profile;
+
                         //mark boolean to true as check is passed
                         checkResult = true;
 
@@ -77,6 +81,10 @@ namespace AnimalSearchService.MessageBroker.Consumers
                         var animalToUpdate = _animalRepository.Get(context.Message.AnimalRef);
                         await _animalCreationProducer.Send(animalToUpdate);
 
+                        //remove old profile in minio
+                        if(oldProfile != null) 
+                            await _storageService.DeleteMediaAsync(context.Message.AnimalRef, context.Message.MediaType, oldProfile.FileName);
+
                         break;
                     }
                 }
@@ -84,9 +92,8 @@ namespace AnimalSearchService.MessageBroker.Consumers
 
             if (!checkResult)
             {
-                //TODO make a cleanup
-
-                //Maybe some notification about failure
+                //some notification about failure
+                await _rejectionRepository.Add(new Rejection(context.Message.FileName, context.Message.AnimalRef, context.Message.MediaType));
             }
         }
     }
